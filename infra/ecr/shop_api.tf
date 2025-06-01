@@ -6,11 +6,7 @@ resource "aws_ecr_repository" "shop_api" {
     scan_on_push = true
   }
 
-  tags = {
-    Env     = var.env
-    Project = var.project
-    Name    = "${local.shop_api}"
-  }
+  tags    = { Name = "${local.shop_api}" }
 }
 
 resource "aws_ecr_lifecycle_policy" "shop_api" {

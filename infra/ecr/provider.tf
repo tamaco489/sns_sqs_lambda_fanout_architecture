@@ -1,4 +1,12 @@
-provider "aws" {}
+provider "aws" {
+  default_tags {
+    tags = {
+      Project = var.project
+      Env     = var.env
+      Managed = "terraform"
+    }
+  }
+}
 
 terraform {
   required_version = "1.9.5"
