@@ -76,8 +76,31 @@ delete-images:
 	done | jq .
 
 # lambda
-# .PHONY: deploy
-# deploy: push
-# 	aws lambda update-function-code  --profile ${AWS_PROFILE} \
-# 		--function-name stg-shop-api \
-# 		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-shop-api:$(VERSION) | jq .
+.PHONY: deploy
+deploy: push
+	aws lambda update-function-code  --profile ${AWS_PROFILE} \
+		--function-name stg-shop-api \
+		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-shop-api:$(VERSION) | jq .
+
+# =================================================================
+# apiリクエストする時用のやつ（dev）
+# =================================================================
+sleep:
+	@sleep 0.5
+
+.PHONY: healthcheck
+healthcheck:
+	curl -i -X 'GET' \
+		'http://localhost:8080/shop/v1/healthcheck' \
+		-H 'accept: application/json'
+
+# =================================================================
+# apiリクエストする時用のやつ（stg）
+# =================================================================
+AWS_API_DOMAIN := <api.domain>
+
+.PHONY: stg-healthcheck
+stg-healthcheck:
+	curl -i -X 'GET' \
+		'https://${AWS_API_DOMAIN}/shop/v1/healthcheck' \
+		-H 'accept: application/json'
