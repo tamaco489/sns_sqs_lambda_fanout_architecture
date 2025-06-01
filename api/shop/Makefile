@@ -76,8 +76,8 @@ delete-images:
 	done | jq .
 
 # lambda
-# .PHONY: deploy
-# deploy: push
-# 	aws lambda update-function-code  --profile ${AWS_PROFILE} \
-# 		--function-name stg-shop-api \
-# 		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-shop-api:$(VERSION) | jq .
+.PHONY: deploy
+deploy: push
+	aws lambda update-function-code  --profile ${AWS_PROFILE} \
+		--function-name stg-shop-api \
+		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-shop-api:$(VERSION) | jq .
