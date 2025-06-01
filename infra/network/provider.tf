@@ -12,7 +12,7 @@ terraform {
   required_version = "1.9.5"
   backend "s3" {
     bucket = "stg-sns-sqs-lambda-fanout-architecture"
-    key    = "ecr/terraform.tfstate"
+    key    = "network/terraform.tfstate"
   }
   required_providers {
     aws = {

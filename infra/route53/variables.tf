@@ -7,7 +7,7 @@ variable "env" {
 variable "project" {
   description = "The project name"
   type        = string
-  default     = "sns-sqs-lambda-fanout-architecture"
+  default     = "fan-out-architecture"
 }
 
 variable "region" {
