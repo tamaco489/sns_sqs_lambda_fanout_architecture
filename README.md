@@ -3,7 +3,7 @@
 ```
 [SNS Topic]
      │
-     ├────▶ [SQS Queue: slack-sqs] ──▶ [Lambda: slack handler]
+     ├────▶ [SQS Queue: slack-message-sqs] ──▶ [Lambda: slack message handler]
      │
-     └────▶ [SQS Queue: line-message-sqs] ──▶ [Lambda: line handler]
+     └────▶ [SQS Queue: line-message-sqs] ──▶ [Lambda: line message handler]
 ```
