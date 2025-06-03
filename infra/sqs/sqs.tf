@@ -1,5 +1,5 @@
-resource "aws_sqs_queue" "slack" {
-  name                        = "slack-sqs"
+resource "aws_sqs_queue" "slack_message" {
+  name                        = "slack-message-sqs"
   fifo_queue                  = false
   content_based_deduplication = false
   delay_seconds               = 0
@@ -8,7 +8,7 @@ resource "aws_sqs_queue" "slack" {
   visibility_timeout_seconds  = 10 // NOTE: 本番運用時はもう少し長めにしても良い
   receive_wait_time_seconds   = 0
 
-  tags = { Name = "slack-sqs" }
+  tags = { Name = "slack-message-sqs" }
 }
 
 resource "aws_sqs_queue" "line_message" {
