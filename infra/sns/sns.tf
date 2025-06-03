@@ -5,33 +5,6 @@ resource "aws_sns_topic" "notifications" {
   content_based_deduplication = false
 }
 
-# SQS Queues
-resource "aws_sqs_queue" "slack" {
-  name                        = "slack-sqs"
-  fifo_queue                  = false
-  content_based_deduplication = false
-  delay_seconds               = 0
-  max_message_size            = 262144
-  message_retention_seconds   = 345600
-  visibility_timeout_seconds  = 30
-  receive_wait_time_seconds   = 0
-
-  tags = { Name = "slack-sqs" }
-}
-
-resource "aws_sqs_queue" "line_message" {
-  name                        = "line-message-sqs"
-  fifo_queue                  = false
-  content_based_deduplication = false
-  delay_seconds               = 0
-  max_message_size            = 262144
-  message_retention_seconds   = 345600
-  visibility_timeout_seconds  = 30
-  receive_wait_time_seconds   = 0
-
-  tags = { Name = "line-message-sqs" }
-}
-
 # TODO: sqsのリソースは別ディレクトリに切り出す
 # SNS -> SQS subscription
 resource "aws_sns_topic_subscription" "slack_sub" {
