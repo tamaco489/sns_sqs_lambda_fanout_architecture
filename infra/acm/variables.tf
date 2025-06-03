@@ -7,7 +7,7 @@ variable "env" {
 variable "project" {
   description = "The project name"
   type        = string
-  default     = "fan-out-architecture"
+  default     = "fanout-architecture"
 }
 
 variable "product" {
