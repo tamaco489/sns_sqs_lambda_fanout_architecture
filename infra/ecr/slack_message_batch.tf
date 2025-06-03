@@ -1,16 +1,16 @@
-resource "aws_ecr_repository" "shop_api" {
-  name                 = local.shop_api
+resource "aws_ecr_repository" "slack_message_batch" {
+  name                 = local.slack_message_batch
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
     scan_on_push = true
   }
 
-  tags = { Name = "${local.shop_api}" }
+  tags = { Name = "${local.slack_message_batch}" }
 }
 
-resource "aws_ecr_lifecycle_policy" "shop_api" {
-  repository = aws_ecr_repository.shop_api.name
+resource "aws_ecr_lifecycle_policy" "slack_message_batch" {
+  repository = aws_ecr_repository.slack_message_batch.name
   policy = jsonencode(
     {
       "rules" : [
@@ -19,7 +19,7 @@ resource "aws_ecr_lifecycle_policy" "shop_api" {
           "description" : "バージョン付きのイメージを5個保持する、6個目がアップロードされた際には古いものから順に削除されていく",
           "selection" : {
             "tagStatus" : "tagged",
-            "tagPrefixList" : ["shop_api_v"],
+            "tagPrefixList" : ["slack_message_batch_v"],
             "countType" : "imageCountMoreThan",
             "countNumber" : 5
           },
