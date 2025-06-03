@@ -1,5 +1,5 @@
 # =================================================================
-# SNS (slack notification)
+# SNS (slack message notification)
 # =================================================================
 resource "aws_sns_topic" "notifications" {
   name                        = "fanout-notifications"
@@ -8,10 +8,10 @@ resource "aws_sns_topic" "notifications" {
 }
 
 # SNS -> SQS subscription
-resource "aws_sns_topic_subscription" "slack_sub" {
+resource "aws_sns_topic_subscription" "slack_message" {
   topic_arn              = aws_sns_topic.notifications.arn
   protocol               = "sqs"
-  endpoint               = data.terraform_remote_state.sqs.outputs.slack_sqs.arn
+  endpoint               = data.terraform_remote_state.sqs.outputs.slack_message_sqs.arn
   endpoint_auto_confirms = true
 
   # NOTE: raw_message_delivery を true にすることで、JSONによるラップを行わず、投稿したメッセージをそのまま送信することができる。※consumer 側でメタ情報等が必要な場合は false にする。
@@ -20,7 +20,7 @@ resource "aws_sns_topic_subscription" "slack_sub" {
 }
 
 # NOTE: SQSにSNSからの送信を許可（SQS側に定義したいがお互いにリソースを参照することで循環参照してしまうため、SNS側に定義）
-data "aws_iam_policy_document" "slack_sqs_policy_doc" {
+data "aws_iam_policy_document" "slack_message_sqs_policy_doc" {
   statement {
     effect = "Allow"
 
@@ -30,7 +30,7 @@ data "aws_iam_policy_document" "slack_sqs_policy_doc" {
     }
 
     actions   = ["sqs:SendMessage"]
-    resources = [data.terraform_remote_state.sqs.outputs.slack_sqs.arn]
+    resources = [data.terraform_remote_state.sqs.outputs.slack_message_sqs.arn]
 
     condition {
       test     = "ArnEquals"
@@ -40,16 +40,16 @@ data "aws_iam_policy_document" "slack_sqs_policy_doc" {
   }
 }
 
+resource "aws_sqs_queue_policy" "slack_message_policy" {
+  queue_url = data.terraform_remote_state.sqs.outputs.slack_message_sqs.id
+  policy    = data.aws_iam_policy_document.slack_message_sqs_policy_doc.json
+}
+
 # =================================================================
 # SNS (line message notification)
 # =================================================================
-resource "aws_sqs_queue_policy" "slack_policy" {
-  queue_url = data.terraform_remote_state.sqs.outputs.slack_sqs.id
-  policy    = data.aws_iam_policy_document.slack_sqs_policy_doc.json
-}
-
 # SNS -> SQS subscription
-resource "aws_sns_topic_subscription" "line_sub" {
+resource "aws_sns_topic_subscription" "line_message" {
   topic_arn              = aws_sns_topic.notifications.arn
   protocol               = "sqs"
   endpoint               = data.terraform_remote_state.sqs.outputs.line_message_sqs.arn
@@ -61,7 +61,7 @@ resource "aws_sns_topic_subscription" "line_sub" {
 }
 
 # NOTE: SQSにSNSからの送信を許可（SQS側に定義したいがお互いにリソースを参照することで循環参照してしまうため、SNS側に定義）
-data "aws_iam_policy_document" "line_sqs_policy_doc" {
+data "aws_iam_policy_document" "line_message_sqs_policy_doc" {
   statement {
     effect = "Allow"
 
@@ -81,7 +81,7 @@ data "aws_iam_policy_document" "line_sqs_policy_doc" {
   }
 }
 
-resource "aws_sqs_queue_policy" "line_policy" {
+resource "aws_sqs_queue_policy" "line_message_policy" {
   queue_url = data.terraform_remote_state.sqs.outputs.line_message_sqs.id
-  policy    = data.aws_iam_policy_document.line_sqs_policy_doc.json
+  policy    = data.aws_iam_policy_document.line_message_sqs_policy_doc.json
 }

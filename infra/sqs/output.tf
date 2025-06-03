@@ -1,10 +1,10 @@
-output "slack_sqs" {
+output "slack_message_sqs" {
   value = {
-    arn = aws_sqs_queue.slack.arn
-    id  = aws_sqs_queue.slack.id
-    name = aws_sqs_queue.slack.name
+    arn = aws_sqs_queue.slack_message.arn
+    id  = aws_sqs_queue.slack_message.id
+    name = aws_sqs_queue.slack_message.name
   }
-  description = "SQS queue information for Slack notifications"
+  description = "SQS queue information for Slack message notifications"
 }
 
 output "line_message_sqs" {
