@@ -1,5 +1,5 @@
-resource "aws_sqs_queue" "slack_message" {
-  name                        = "slack-message-sqs"
+resource "aws_sqs_queue" "slack_message_sqs" {
+  name                        = "${local.slack_message_sqs}"
   fifo_queue                  = false
   content_based_deduplication = false
 
@@ -31,11 +31,11 @@ resource "aws_sqs_queue" "slack_message" {
   #   maxReceiveCount     = 3
   # })
 
-  tags = { Name = "slack-message-sqs" }
+  tags = { Name = "${local.slack_message_sqs}" }
 }
 
-resource "aws_sqs_queue" "line_message" {
-  name                        = "line-message-sqs"
+resource "aws_sqs_queue" "line_message_sqs" {
+  name                        = "${local.line_message_sqs}"
   fifo_queue                  = false
   content_based_deduplication = false
 
@@ -67,5 +67,5 @@ resource "aws_sqs_queue" "line_message" {
   #   maxReceiveCount     = 3
   # })
 
-  tags = { Name = "line-message-sqs" }
+  tags = { Name = "${local.line_message_sqs}" }
 }

@@ -18,4 +18,12 @@ variable "region" {
 
 locals {
   fqn = "${var.env}-${var.project}"
+
+  # sqs
+  slack_message_sqs = "${var.env}-slack-message-sqs"
+  line_message_sqs  = "${var.env}-line-message-sqs"
+
+  # dql
+  slack_message_dlq = "${var.env}-slack-message-dlq"
+  line_message_dlq   = "${var.env}-line-message-dlq"
 }
