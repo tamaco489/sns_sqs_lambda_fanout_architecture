@@ -39,7 +39,7 @@ sns-publish:
 # sqs
 sqs-receive:
 	aws sqs receive-message \
-		--queue-url https://sqs.ap-northeast-1.amazonaws.com/$(AWS_ACCOUNT_ID)/stg-slack-message-sqs \
+		--queue-url https://sqs.ap-northeast-1.amazonaws.com/$(AWS_ACCOUNT_ID)/stg-slack-message-lambda-process-standard-sqs \
 		--max-number-of-messages 1 \
 		--wait-time-seconds 5 \
 		--profile ${AWS_PROFILE} | jq .
