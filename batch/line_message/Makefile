@@ -28,6 +28,7 @@ deploy: push
 		--function-name stg-line-message-batch \
 		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-line-message-batch:$(VERSION) | jq .
 
+# sns
 sns-publish:
 	aws sns publish \
 		--topic-arn arn:aws:sns:ap-northeast-1:$(AWS_ACCOUNT_ID):stg-fanout-notifications \
