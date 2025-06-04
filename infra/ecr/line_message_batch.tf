@@ -1,0 +1,72 @@
+resource "aws_ecr_repository" "line_message_batch" {
+  name                 = local.line_message_batch
+  image_tag_mutability = "MUTABLE"
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+
+  tags = { Name = "${local.line_message_batch}" }
+}
+
+resource "aws_ecr_lifecycle_policy" "line_message_batch" {
+  repository = aws_ecr_repository.line_message_batch.name
+  policy = jsonencode(
+    {
+      "rules" : [
+        {
+          "rulePriority" : 1,
+          "description" : "バージョン付きのイメージを5個保持する、6個目がアップロードされた際には古いものから順に削除されていく",
+          "selection" : {
+            "tagStatus" : "tagged",
+            "tagPrefixList" : ["line_message_batch_v"],
+            "countType" : "imageCountMoreThan",
+            "countNumber" : 5
+          },
+          "action" : {
+            "type" : "expire"
+          }
+        },
+        {
+          "rulePriority" : 2,
+          "description" : "stgタグ付きの最新イメージのみを保持する",
+          "selection" : {
+            "tagStatus" : "tagged",
+            "tagPrefixList" : ["stg"], // stgタグ付きイメージ
+            "countType" : "imageCountMoreThan",
+            "countNumber" : 1, // 最新世代を保持
+          },
+          "action" : {
+            "type" : "expire"
+          }
+        },
+        {
+          "rulePriority" : 3,
+          "description" : "タグが設定されていないイメージをアップロードされてから3日後に削除する",
+          "selection" : {
+            "tagStatus" : "untagged",
+            "countType" : "sinceImagePushed",
+            "countUnit" : "days",
+            "countNumber" : 3
+          },
+          "action" : {
+            "type" : "expire"
+          }
+        },
+        {
+          "rulePriority" : 4,
+          "description" : "タグが設定されたイメージをアップロードされてから7日後に削除する",
+          "selection" : {
+            "tagStatus" : "any",
+            "countType" : "sinceImagePushed",
+            "countUnit" : "days",
+            "countNumber" : 7
+          },
+          "action" : {
+            "type" : "expire"
+          }
+        }
+      ]
+    }
+  )
+}
