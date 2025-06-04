@@ -7,7 +7,6 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.36.3
 	github.com/aws/aws-sdk-go-v2/config v1.29.14
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/tamaco489/sns_sqs_lambda_fanout_architecture/batch/slack_message v0.0.0-20250604160114-80aaacdfbc24
 )
 
 require (
