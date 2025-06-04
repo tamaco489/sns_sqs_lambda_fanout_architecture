@@ -32,13 +32,14 @@ deploy: push
 sns-publish:
 	aws sns publish \
 		--topic-arn arn:aws:sns:ap-northeast-1:$(AWS_ACCOUNT_ID):fanout-notifications \
-		--message '{"message": "Hello from SNS"}' \
+    --message "send slack message" \
+    --message-attributes '{"type": {"DataType": "String", "StringValue": "slack_message"}}' \
 		--profile ${AWS_PROFILE} | jq .
 
 # sqs
 sqs-receive:
 	aws sqs receive-message \
-		--queue-url https://sqs.ap-northeast-1.amazonaws.com/$(AWS_ACCOUNT_ID)/line-message-sqs \
+		--queue-url https://sqs.ap-northeast-1.amazonaws.com/$(AWS_ACCOUNT_ID)/slack-message-sqs \
 		--max-number-of-messages 1 \
 		--wait-time-seconds 5 \
 		--profile ${AWS_PROFILE} | jq .
