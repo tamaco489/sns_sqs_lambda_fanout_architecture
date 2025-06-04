@@ -27,3 +27,18 @@ deploy: push
 	aws lambda update-function-code  --profile ${AWS_PROFILE} \
 		--function-name stg-line-message-batch \
 		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-line-message-batch:$(VERSION) | jq .
+
+sns-publish:
+	aws sns publish \
+		--topic-arn arn:aws:sns:ap-northeast-1:$(AWS_ACCOUNT_ID):stg-fanout-notifications \
+    --message "send line message" \
+    --message-attributes '{"type": {"DataType": "String", "StringValue": "line_message"}}' \
+		--profile ${AWS_PROFILE} | jq .
+
+# sqs
+sqs-receive:
+	aws sqs receive-message \
+		--queue-url https://sqs.ap-northeast-1.amazonaws.com/$(AWS_ACCOUNT_ID)/stg-line-message-lambda-process-standard-sqs \
+		--max-number-of-messages 1 \
+		--wait-time-seconds 5 \
+		--profile ${AWS_PROFILE} | jq .
