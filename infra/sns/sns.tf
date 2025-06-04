@@ -2,7 +2,7 @@
 # SNS (slack message notification)
 # =================================================================
 resource "aws_sns_topic" "notifications" {
-  name                        = "fanout-notifications"
+  name                        = "${var.env}-fanout-notifications"
   fifo_topic                  = false
   content_based_deduplication = false
 }
@@ -23,6 +23,12 @@ resource "aws_sns_topic_subscription" "slack_message" {
   filter_policy = jsonencode({
     type = ["slack_message"]
   })
+
+  # NOTE: SNS -> SQS のメッセージ送信に失敗した場合、DLQにメッセージを送信する。
+  # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html#how-messages-moved-into-dead-letter-queue
+  # redrive_policy = jsonencode({
+    #   deadLetterTargetArn = ""
+  # })
 }
 
 # NOTE: SQSにSNSからの送信を許可（SQS側に定義したいがお互いにリソースを参照することで循環参照してしまうため、SNS側に定義）
@@ -70,6 +76,12 @@ resource "aws_sns_topic_subscription" "line_message" {
   filter_policy = jsonencode({
     type = ["line_message"]
   })
+
+  # NOTE: SNS -> SQS のメッセージ送信に失敗した場合、DLQにメッセージを送信する。
+  # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html#how-messages-moved-into-dead-letter-queue
+  # redrive_policy = jsonencode({
+  #   deadLetterTargetArn = ""
+  # })
 }
 
 # NOTE: SQSにSNSからの送信を許可（SQS側に定義したいがお互いにリソースを参照することで循環参照してしまうため、SNS側に定義）
