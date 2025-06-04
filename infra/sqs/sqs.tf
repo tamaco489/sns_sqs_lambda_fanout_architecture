@@ -1,5 +1,8 @@
-resource "aws_sqs_queue" "slack_message_sqs" {
-  name                        = "${local.slack_message_sqs}"
+# =================================================================
+# Standard SQS
+# =================================================================
+resource "aws_sqs_queue" "slack_message_lambda_process_standard_sqs" {
+  name                        = "${var.env}-slack-message-lambda-process-standard-sqs"
   fifo_queue                  = false
   content_based_deduplication = false
 
@@ -21,21 +24,21 @@ resource "aws_sqs_queue" "slack_message_sqs" {
   # SQSマネージドサーバーサイド暗号化（SSE）を有効にするかどうか。
   sqs_managed_sse_enabled = false
 
-  # DLQ、及びメッセージの再試行回数を設定
+  # SQS が Lambda にメッセージを送信し、Lambda が処理に失敗した場合の設定（例: 例外が発生、またはタイムアウトが発生した場合など）
   # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html#how-messages-moved-into-dead-letter-queue
-  # redrive_policy = jsonencode({
-  #   # DLQのARNを指定
-  #   deadLetterTargetArn = ""
+  redrive_policy = jsonencode({
+    # DLQのARNを指定
+    deadLetterTargetArn = aws_sqs_queue.slack_message_lambda_process_dlq.arn
 
-  #   # リトライ回数の設定。メッセージが繰り返し処理に失敗する場合に無限ループを防ぐ。
-  #   maxReceiveCount     = 3
-  # })
+    # リトライ回数の設定。Lamnbda側でメッセージが繰り返し処理に失敗する場合に無限ループを防ぐ。
+    maxReceiveCount = 3
+  })
 
-  tags = { Name = "${local.slack_message_sqs}" }
+  tags = { Name = "${var.env}-slack-message-lambda-process-standard-sqs" }
 }
 
-resource "aws_sqs_queue" "line_message_sqs" {
-  name                        = "${local.line_message_sqs}"
+resource "aws_sqs_queue" "line_message_lambda_process_standard_sqs" {
+  name                        = "${var.env}-line-message-lambda-process-standard-sqs"
   fifo_queue                  = false
   content_based_deduplication = false
 
@@ -57,15 +60,15 @@ resource "aws_sqs_queue" "line_message_sqs" {
   # SQSマネージドサーバーサイド暗号化（SSE）を有効にするかどうか。
   sqs_managed_sse_enabled = false
 
-  # DLQ、及びメッセージの再試行回数を設定
+  # SQS が Lambda にメッセージを送信し、Lambda が処理に失敗した場合の設定（例: 例外が発生、またはタイムアウトが発生した場合など）
   # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html#how-messages-moved-into-dead-letter-queue
-  # redrive_policy = jsonencode({
-  #   # DLQのARNを指定
-  #   deadLetterTargetArn = ""
+  redrive_policy = jsonencode({
+    # DLQのARNを指定
+    deadLetterTargetArn = aws_sqs_queue.line_message_lambda_process_dlq.arn
 
-  #   # リトライ回数の設定。メッセージが繰り返し処理に失敗する場合に無限ループを防ぐ。
-  #   maxReceiveCount     = 3
-  # })
+    # リトライ回数の設定。Lamnbda側でメッセージが繰り返し処理に失敗する場合に無限ループを防ぐ。
+    maxReceiveCount = 3
+  })
 
-  tags = { Name = "${local.line_message_sqs}" }
+  tags = { Name = "${var.env}-line-message-lambda-process-standard-sqs" }
 }
