@@ -36,20 +36,19 @@ data "aws_iam_policy_document" "slack_message_batch_sqs_policy" {
       "sqs:GetQueueAttributes"
     ]
     resources = [
-      data.terraform_remote_state.sqs.outputs.slack_message_sqs.arn
+      data.terraform_remote_state.sqs.outputs.slack_message_lambda_process_standard_sqs.arn
     ]
   }
 
-  # NOTE: Dead Letter Queue の設定が完了次第、以下設定を有効にする
-  # statement {
-  #   effect = "Allow"
-  #   actions = [
-  #     "sqs:SendMessage"
-  #   ]
-  #   resources = [
-  #     data.terraform_remote_state.sqs.outputs.slack_message_dlq.arn
-  #   ]
-  # }
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:SendMessage"
+    ]
+    resources = [
+      data.terraform_remote_state.sqs.outputs.slack_message_lambda_process_dlq.arn
+    ]
+  }
 }
 
 # SQSへのアクセス権を定義するポリシードキュメントをIAM Policyとして定義し、IAM Roleに関連付ける

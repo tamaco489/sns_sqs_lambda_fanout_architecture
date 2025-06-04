@@ -31,7 +31,7 @@ resource "aws_lambda_function" "slack_message_batch" {
 # Lambdaのイベントソースマッピングの設定
 # SQSキューからのメッセージ受信をトリガーに、Lambadaを起動するために必要な設定
 resource "aws_lambda_event_source_mapping" "slack_message_batch" {
-  event_source_arn = data.terraform_remote_state.sqs.outputs.slack_message_sqs.arn
+  event_source_arn = data.terraform_remote_state.sqs.outputs.slack_message_lambda_process_standard_sqs.arn
   function_name    = aws_lambda_function.slack_message_batch.arn
   enabled          = true
   batch_size       = 1

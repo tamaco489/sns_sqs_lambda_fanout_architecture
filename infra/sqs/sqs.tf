@@ -1,25 +1,74 @@
-resource "aws_sqs_queue" "slack_message" {
-  name                        = "slack-message-sqs"
+# =================================================================
+# Standard SQS
+# =================================================================
+resource "aws_sqs_queue" "slack_message_lambda_process_standard_sqs" {
+  name                        = "${var.env}-slack-message-lambda-process-standard-sqs"
   fifo_queue                  = false
   content_based_deduplication = false
-  delay_seconds               = 0
-  max_message_size            = 256 * 1024  # 256KB
-  message_retention_seconds   = 1 * 24 * 60 * 60  # 1日間
-  visibility_timeout_seconds  = 15 # NOTE: 本番運用時はもう少し長めにしても良い
-  receive_wait_time_seconds   = 0
 
-  tags = { Name = "slack-message-sqs" }
+  # キュー内の全メッセージの配送を遅延させる時間、秒単位で設定。（30秒で設定した場合、キューに送信してもLambda30秒間はこのキューを見ることができない。※0の場合は即時配信となる）
+  delay_seconds = 0
+
+  # 最大メッセージサイズ
+  max_message_size = 256 * 1024 # 256KB
+
+  # メッセージの保持期間
+  message_retention_seconds = 1 * 24 * 60 * 60 # 1日間
+
+  # キューの可視性タイムアウト。秒単位で設定。（指定した期間中は他のコンシューマーはキューを参照することができない）
+  visibility_timeout_seconds = 15 # NOTE: 本番運用時はもう少し長めにしても良い
+
+  # ロングポーリングの待機時間。秒単位で設定。（0の場合、即時レスポンスとなる）
+  receive_wait_time_seconds = 0
+
+  # SQSマネージドサーバーサイド暗号化（SSE）を有効にするかどうか。
+  sqs_managed_sse_enabled = false
+
+  # SQS が Lambda にメッセージを送信し、Lambda が処理に失敗した場合の設定（例: 例外が発生、またはタイムアウトが発生した場合など）
+  # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html#how-messages-moved-into-dead-letter-queue
+  redrive_policy = jsonencode({
+    # DLQのARNを指定
+    deadLetterTargetArn = aws_sqs_queue.slack_message_lambda_process_dlq.arn
+
+    # リトライ回数の設定。Lamnbda側でメッセージが繰り返し処理に失敗する場合に無限ループを防ぐ。
+    maxReceiveCount = 3
+  })
+
+  tags = { Name = "${var.env}-slack-message-lambda-process-standard-sqs" }
 }
 
-resource "aws_sqs_queue" "line_message" {
-  name                        = "line-message-sqs"
+resource "aws_sqs_queue" "line_message_lambda_process_standard_sqs" {
+  name                        = "${var.env}-line-message-lambda-process-standard-sqs"
   fifo_queue                  = false
   content_based_deduplication = false
-  delay_seconds               = 0
-  max_message_size            = 256 * 1024  # 256KB
-  message_retention_seconds   = 1 * 24 * 60 * 60  # 1日間
-  visibility_timeout_seconds  = 15 # NOTE: 本番運用時はもう少し長めにしても良い
-  receive_wait_time_seconds   = 0
 
-  tags = { Name = "line-message-sqs" }
+  # キュー内の全メッセージの配送を遅延させる時間、秒単位で設定。（30秒で設定した場合、キューに送信してもLambda30秒間はこのキューを見ることができない。※0の場合は即時配信となる）
+  delay_seconds = 0
+
+  # 最大メッセージサイズ
+  max_message_size = 256 * 1024 # 256KB
+
+  # メッセージの保持期間
+  message_retention_seconds = 1 * 24 * 60 * 60 # 1日間
+
+  # キューの可視性タイムアウト。秒単位で設定。（指定した期間中は他のコンシューマーはキューを参照することができない）
+  visibility_timeout_seconds = 15 # NOTE: 本番運用時はもう少し長めにしても良い
+
+  # ロングポーリングの待機時間。秒単位で設定。（0の場合、即時レスポンスとなる）
+  receive_wait_time_seconds = 0
+
+  # SQSマネージドサーバーサイド暗号化（SSE）を有効にするかどうか。
+  sqs_managed_sse_enabled = false
+
+  # SQS が Lambda にメッセージを送信し、Lambda が処理に失敗した場合の設定（例: 例外が発生、またはタイムアウトが発生した場合など）
+  # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-dead-letter-queues.html#how-messages-moved-into-dead-letter-queue
+  redrive_policy = jsonencode({
+    # DLQのARNを指定
+    deadLetterTargetArn = aws_sqs_queue.line_message_lambda_process_dlq.arn
+
+    # リトライ回数の設定。Lamnbda側でメッセージが繰り返し処理に失敗する場合に無限ループを防ぐ。
+    maxReceiveCount = 3
+  })
+
+  tags = { Name = "${var.env}-line-message-lambda-process-standard-sqs" }
 }
