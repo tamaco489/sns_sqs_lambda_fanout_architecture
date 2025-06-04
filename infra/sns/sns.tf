@@ -16,7 +16,13 @@ resource "aws_sns_topic_subscription" "slack_message" {
 
   # NOTE: raw_message_delivery を true にすることで、JSONによるラップを行わず、投稿したメッセージをそのまま送信することができる。※consumer 側でメタ情報等が必要な場合は false にする。
   # DOC: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription#:~:text=raw_message_delivery%20%2D%20(Optional)%20Whether%20to%20enable%20raw%20message%20delivery%20(the%20original%20message%20is%20directly%20passed%2C%20not%20wrapped%20in%20JSON%20with%20the%20original%20message%20in%20the%20message%20property).%20Default%20is%20false.
-  raw_message_delivery   = true
+  raw_message_delivery = true
+
+  # NOTE: メッセージフィルタリングを行うことで、特定のメッセージのみを送信することができる。
+  # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html
+  filter_policy = jsonencode({
+    type = ["slack_message"]
+  })
 }
 
 # NOTE: SQSにSNSからの送信を許可（SQS側に定義したいがお互いにリソースを参照することで循環参照してしまうため、SNS側に定義）
@@ -57,7 +63,13 @@ resource "aws_sns_topic_subscription" "line_message" {
 
   # NOTE: raw_message_delivery を true にすることで、JSONによるラップを行わず、投稿したメッセージをそのまま送信することができる。※consumer 側でメタ情報等が必要な場合は false にする。
   # DOC: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/sns_topic_subscription#:~:text=raw_message_delivery%20%2D%20(Optional)%20Whether%20to%20enable%20raw%20message%20delivery%20(the%20original%20message%20is%20directly%20passed%2C%20not%20wrapped%20in%20JSON%20with%20the%20original%20message%20in%20the%20message%20property).%20Default%20is%20false.
-  raw_message_delivery   = true
+  raw_message_delivery = true
+
+  # NOTE: メッセージフィルタリングを行うことで、特定のメッセージのみを送信することができる。
+  # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html
+  filter_policy = jsonencode({
+    type = ["line_message"]
+  })
 }
 
 # NOTE: SQSにSNSからの送信を許可（SQS側に定義したいがお互いにリソースを参照することで循環参照してしまうため、SNS側に定義）
