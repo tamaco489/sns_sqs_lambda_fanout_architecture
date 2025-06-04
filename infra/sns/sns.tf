@@ -1,15 +1,14 @@
 # =================================================================
 # SNS (slack message notification)
 # =================================================================
-resource "aws_sns_topic" "notifications" {
+resource "aws_sns_topic" "fanout_notifications" {
   name                        = "${var.env}-fanout-notifications"
   fifo_topic                  = false
   content_based_deduplication = false
 }
 
-# SNS -> SQS subscription
 resource "aws_sns_topic_subscription" "slack_message" {
-  topic_arn              = aws_sns_topic.notifications.arn
+  topic_arn              = aws_sns_topic.fanout_notifications.arn
   protocol               = "sqs"
   endpoint               = data.terraform_remote_state.sqs.outputs.slack_message_lambda_process_standard_sqs.arn
   endpoint_auto_confirms = true
@@ -47,7 +46,7 @@ data "aws_iam_policy_document" "slack_message_sqs_policy_doc" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [aws_sns_topic.notifications.arn]
+      values   = [aws_sns_topic.fanout_notifications.arn]
     }
   }
 }
@@ -60,9 +59,8 @@ resource "aws_sqs_queue_policy" "slack_message_policy" {
 # =================================================================
 # SNS (line message notification)
 # =================================================================
-# SNS -> SQS subscription
 resource "aws_sns_topic_subscription" "line_message" {
-  topic_arn              = aws_sns_topic.notifications.arn
+  topic_arn              = aws_sns_topic.fanout_notifications.arn
   protocol               = "sqs"
   endpoint               = data.terraform_remote_state.sqs.outputs.line_message_lambda_process_standard_sqs.arn
   endpoint_auto_confirms = true
@@ -100,7 +98,7 @@ data "aws_iam_policy_document" "line_message_sqs_policy_doc" {
     condition {
       test     = "ArnEquals"
       variable = "aws:SourceArn"
-      values   = [aws_sns_topic.notifications.arn]
+      values   = [aws_sns_topic.fanout_notifications.arn]
     }
   }
 }
