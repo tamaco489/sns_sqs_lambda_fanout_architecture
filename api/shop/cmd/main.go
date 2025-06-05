@@ -1,29 +1,47 @@
 package main
 
 import (
-	"log"
+	"context"
+	"errors"
+	"log/slog"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/configuration"
+	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/controller"
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("Hello, World!"))
-	})
-
-	http.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OK"))
-	})
-
-	port := os.Getenv("API_PORT")
-	if port == "" {
-		port = "8080"
+	ctx := context.Background()
+	cnf, err := configuration.Load(ctx)
+	if err != nil {
+		slog.Error("Failed to read configuration", "error", err)
+		panic(err)
 	}
 
-	log.Printf("Server starting on port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
-		log.Fatal(err)
+	server, err := controller.NewShopAPIServer(cnf)
+	if err != nil {
+		panic(err)
 	}
+
+	go func() {
+		if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			slog.ErrorContext(ctx, "failed to listen and serve", "error", err)
+		}
+	}()
+
+	ctx, cancel := context.WithTimeout(ctx, 200*time.Microsecond)
+	defer cancel()
+	quit := make(chan os.Signal, 1)
+
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	if err = server.Shutdown(ctx); err != nil {
+		slog.ErrorContext(ctx, "shutdown server...", "error", err)
+	}
+
+	<-ctx.Done()
 }
