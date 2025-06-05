@@ -82,6 +82,13 @@ deploy: push
 		--function-name stg-shop-api \
 		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-shop-api:$(VERSION) | jq .
 
+# sns
+.PHONY: get-sns-topic-attributes
+sns-get-topic-attributes:
+	aws sns get-topic-attributes --profile ${AWS_PROFILE} \
+		--topic-arn arn:aws:sns:ap-northeast-1:$(AWS_ACCOUNT_ID):stg-fanout-notifications \
+		--region ap-northeast-1 | jq .
+
 # =================================================================
 # apiリクエストする時用のやつ（dev）
 # =================================================================
@@ -214,8 +221,41 @@ get-charge-histories:
 # =================================================================
 AWS_API_DOMAIN := <api.domain>
 
+stg-api-all-request: stg-healthcheck sleep \
+	stg-create-user sleep \
+	stg-get-me sleep \
+	stg-create-reservations sleep \
+	stg-create-charge sleep
+
 .PHONY: stg-healthcheck
 stg-healthcheck:
 	curl -i -X 'GET' \
 		'https://${AWS_API_DOMAIN}/shop/v1/healthcheck' \
 		-H 'accept: application/json'
+
+.PHONY: stg-create-user stg-get-me stg-create-product-comment
+stg-create-user:
+	curl -i -X 'POST' \
+		'https://${AWS_API_DOMAIN}/shop/v1/users' \
+		-H 'accept: application/json' \
+		-d ''
+
+stg-get-me:
+	curl -i -X 'GET' \
+		'https://${AWS_API_DOMAIN}/shop/v1/users/me' \
+		-H 'accept: application/json'
+
+.PHONY: stg-create-reservations stg-create-charge
+stg-create-reservations:
+	curl -i -sX 'POST' \
+		'https://${AWS_API_DOMAIN}/shop/v1/payments/reservations' \
+		-H 'accept: application/json' \
+		-H 'Content-Type: application/json' \
+		-d '[{"product_id": 10001001, "quantity": 2}, {"product_id": 10001002, "quantity": 3}]'
+
+stg-create-charge:
+	curl -i -sX 'POST' \
+		'https://${AWS_API_DOMAIN}/shop/v1/payments/charges' \
+		-H 'accept: application/json' \
+		-H 'Content-Type: application/json' \
+		-d '{"reservation_id": "9f9213b2-9687-6910-d2ec-3a247582be2d"}'
