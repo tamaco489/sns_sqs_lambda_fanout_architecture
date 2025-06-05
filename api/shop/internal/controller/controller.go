@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/configuration"
+	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/library/sns_client"
 	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/usecase"
 )
 
@@ -12,14 +13,11 @@ type Controllers struct {
 }
 
 func NewControllers(cnf configuration.Config) (*Controllers, error) {
+	// library
+	snsClient := sns_client.NewSNSClient(cnf.AWSConfig)
 
-	// sqsClient, err := sqs_client.NewSQSClient(cnf.AWSConfig, cnf.API.Env)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to init sqs client: %w", err)
-	// }
-
-	// chargeUseCase := usecase.NewChargeUseCase(sqsClient)
-	chargeUseCase := usecase.NewChargeUseCase()
+	// usecase
+	chargeUseCase := usecase.NewChargeUseCase(snsClient)
 	reservationUseCase := usecase.NewReservationUseCase()
 
 	return &Controllers{

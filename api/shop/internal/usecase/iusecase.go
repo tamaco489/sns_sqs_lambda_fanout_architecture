@@ -3,6 +3,7 @@ package usecase
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/gen"
+	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/library/sns_client"
 )
 
 type IChargeUseCase interface {
@@ -13,17 +14,12 @@ type IReservationUseCase interface {
 	CreateReservation(ctx *gin.Context, request gen.CreateReservationRequestObject) (gen.CreateReservationResponseObject, error)
 }
 
-// type chargeUseCase struct{ sqsClient *sqs_client.SQSClient }
-type chargeUseCase struct{}
+type chargeUseCase struct{ snsClient *sns_client.SNSWrapper }
 
 type reservationUseCase struct{}
 
-// func NewChargeUseCase(sqsClient *sqs_client.SQSClient) IChargeUseCase {
-// 	return &chargeUseCase{sqsClient: sqsClient}
-// }
-
-func NewChargeUseCase() IChargeUseCase {
-	return &chargeUseCase{}
+func NewChargeUseCase(snsClient *sns_client.SNSWrapper) IChargeUseCase {
+	return &chargeUseCase{snsClient: snsClient}
 }
 
 func NewReservationUseCase() IReservationUseCase {

@@ -11,16 +11,17 @@ import (
 var globalConfig Config
 
 type Config struct {
-	API struct {
+	AWSConfig aws.Config
+	Logging   string `envconfig:"LOGGING" default:"off"`
+	API       struct {
 		Env         string `envconfig:"API_ENV" default:"dev"`
 		Port        string `envconfig:"API_PORT" default:"8080"`
 		ServiceName string `envconfig:"API_SERVICE_NAME" default:"shop-api"`
 	}
-	SQS struct {
-		PushNotificationURL string `envconfig:"SQS_PUSH_NOTIFICATION_URL"`
+	SNS struct {
+		// todo: これ secret manager から取得できるようにする。
+		ChargeNotificationsTopicArn string `envconfig:"SNS_CHARGE_NOTIFICATIONS_TOPIC_ARN" default:"arn:aws:sns:ap-northeast-1:123456789012:stg-fanout-notifications"`
 	}
-	Logging   string `envconfig:"LOGGING" default:"off"`
-	AWSConfig aws.Config
 }
 
 func Get() Config { return globalConfig }
