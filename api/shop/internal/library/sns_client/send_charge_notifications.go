@@ -18,14 +18,8 @@ type SendChargeNotificationsPayload struct {
 
 func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendChargeNotificationsPayload) (*sns.PublishOutput, error) {
 
-	if payload.TopicArn == "" {
-		return nil, fmt.Errorf("topicArn is required")
-	}
-	if payload.Message == "" {
-		return nil, fmt.Errorf("message is required")
-	}
-	if payload.MessageType == "" {
-		return nil, fmt.Errorf("messageType is required")
+	if err := payload.Validate(); err != nil {
+		return nil, fmt.Errorf("invalid payload: %w", err)
 	}
 
 	messageAttributes := map[string]snstypes.MessageAttributeValue{
@@ -47,4 +41,17 @@ func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendC
 	}
 
 	return res, nil
+}
+
+func (p *SendChargeNotificationsPayload) Validate() error {
+	if p.TopicArn == "" {
+		return fmt.Errorf("topicArn is required")
+	}
+	if p.Message == "" {
+		return fmt.Errorf("message is required")
+	}
+	if !p.MessageType.IsValid() {
+		return fmt.Errorf("invalid messageType: %s", p.MessageType)
+	}
+	return nil
 }
