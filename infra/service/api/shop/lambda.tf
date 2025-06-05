@@ -20,9 +20,10 @@ resource "aws_lambda_function" "shop_api" {
 
   environment {
     variables = {
-      API_SERVICE_NAME = "shop-api"
-      API_ENV          = "stg"
-      API_PORT         = "8080"
+      API_SERVICE_NAME                   = "shop-api"
+      API_ENV                            = "stg"
+      API_PORT                           = "8080"
+      SNS_CHARGE_NOTIFICATIONS_TOPIC_ARN = data.terraform_remote_state.sns.outputs.fanout_notifications.arn
     }
   }
 

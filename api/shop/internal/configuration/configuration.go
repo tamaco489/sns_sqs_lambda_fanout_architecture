@@ -19,8 +19,7 @@ type Config struct {
 		ServiceName string `envconfig:"API_SERVICE_NAME" default:"shop-api"`
 	}
 	SNS struct {
-		// todo: これ secret manager から取得できるようにする。
-		ChargeNotificationsTopicArn string `envconfig:"SNS_CHARGE_NOTIFICATIONS_TOPIC_ARN" default:"arn:aws:sns:ap-northeast-1:123456789012:stg-fanout-notifications"`
+		ChargeNotificationsTopicArn string `envconfig:"SNS_CHARGE_NOTIFICATIONS_TOPIC_ARN"`
 	}
 }
 

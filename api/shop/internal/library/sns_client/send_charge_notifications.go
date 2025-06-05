@@ -24,7 +24,11 @@ func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendC
 	}
 
 	// todo: 検証終了後に削除
-	slog.InfoContext(ctx, "send charge notifications", "payload", payload)
+	slog.InfoContext(ctx, "send charge notifications",
+		"topic_arn", payload.TopicArn,
+		"message", payload.Message,
+		"message_type", payload.MessageType.String(),
+	)
 
 	messageAttributes := map[string]snstypes.MessageAttributeValue{
 		"type": {
