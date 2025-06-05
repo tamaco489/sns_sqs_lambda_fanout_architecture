@@ -8,7 +8,7 @@ import (
 )
 
 type SNSClient interface {
-	SendChargeNotifications(ctx context.Context, input *sns.PublishInput) (*sns.PublishOutput, error)
+	SendChargeNotifications(ctx context.Context, payload SendChargeNotificationsPayload) (*sns.PublishOutput, error)
 }
 
 type SNSWrapper struct {

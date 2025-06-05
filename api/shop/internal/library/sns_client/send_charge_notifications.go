@@ -4,20 +4,41 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
-	"github.com/tamaco489/sns_sqs_lambda_fanout_architecture/api/shop/internal/configuration"
+
+	snstypes "github.com/aws/aws-sdk-go-v2/service/sns/types"
 )
 
-func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, input *sns.PublishInput) (*sns.PublishOutput, error) {
+type SendChargeNotificationsPayload struct {
+	TopicArn    string
+	Message     string
+	MessageType MessageType
+}
 
-	if input.TopicArn == nil {
+func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendChargeNotificationsPayload) (*sns.PublishOutput, error) {
+
+	if payload.TopicArn == "" {
 		return nil, fmt.Errorf("topicArn is required")
 	}
+	if payload.Message == "" {
+		return nil, fmt.Errorf("message is required")
+	}
+	if payload.MessageType == "" {
+		return nil, fmt.Errorf("messageType is required")
+	}
 
-	topicArn := *input.TopicArn
+	messageAttributes := map[string]snstypes.MessageAttributeValue{
+		"type": {
+			DataType:    aws.String("String"),
+			StringValue: aws.String(payload.MessageType.String()),
+		},
+	}
 
-	if topicArn != configuration.Get().SNS.ChargeNotificationsTopicArn {
-		return nil, fmt.Errorf("topicArn is not valid")
+	input := &sns.PublishInput{
+		TopicArn:          aws.String(payload.TopicArn),
+		Message:           aws.String(payload.Message),
+		MessageAttributes: messageAttributes,
 	}
 
 	res, err := sw.Client.Publish(ctx, input)
