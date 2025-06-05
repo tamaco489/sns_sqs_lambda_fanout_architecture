@@ -12,3 +12,12 @@ const (
 func (m MessageType) String() string {
 	return string(m)
 }
+
+func (t MessageType) IsValid() bool {
+	switch t {
+	case MessageTypeBroadcast, MessageTypeSlack, MessageTypeLine:
+		return true
+	default:
+		return false
+	}
+}
