@@ -82,6 +82,13 @@ deploy: push
 		--function-name stg-shop-api \
 		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/stg-shop-api:$(VERSION) | jq .
 
+# sns
+.PHONY: get-sns-topic-attributes
+sns-get-topic-attributes:
+	aws sns get-topic-attributes --profile ${AWS_PROFILE} \
+		--topic-arn arn:aws:sns:ap-northeast-1:$(AWS_ACCOUNT_ID):stg-fanout-notifications \
+		--region ap-northeast-1 | jq .
+
 # =================================================================
 # apiリクエストする時用のやつ（dev）
 # =================================================================
