@@ -3,6 +3,7 @@ package sns_client
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sns"
@@ -21,6 +22,9 @@ func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendC
 	if err := payload.Validate(); err != nil {
 		return nil, fmt.Errorf("invalid payload: %w", err)
 	}
+
+	// todo: 検証終了後に削除
+	slog.InfoContext(ctx, "send charge notifications", "payload", payload)
 
 	messageAttributes := map[string]snstypes.MessageAttributeValue{
 		"type": {
