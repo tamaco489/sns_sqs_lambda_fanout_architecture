@@ -22,6 +22,14 @@ data "terraform_remote_state" "network" {
   }
 }
 
+data "terraform_remote_state" "sns" {
+  backend = "s3"
+  config = {
+    bucket = "${var.env}-sns-sqs-lambda-fanout-architecture"
+    key    = "sns/terraform.tfstate"
+  }
+}
+
 # AWS マネージド型キー
 data "aws_kms_key" "secretsmanager" {
   key_id = "alias/aws/secretsmanager"
