@@ -12,12 +12,16 @@ import (
 	snstypes "github.com/aws/aws-sdk-go-v2/service/sns/types"
 )
 
+// SendChargeNotificationsPayload は通知の送信に必要なパラメータをまとめた構造体です。
 type SendChargeNotificationsPayload struct {
 	TopicArn     string
 	Message      string
 	MessageTypes []MessageType
 }
 
+// SendChargeNotifications はSNSトピックに通知メッセージを送信します。
+//
+// MessageTypesはSNSのメッセージ属性に設定され、各SQSサブスクリプションでのフィルタリングに利用されます。
 func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendChargeNotificationsPayload) (*sns.PublishOutput, error) {
 
 	if err := payload.Validate(); err != nil {
@@ -30,6 +34,8 @@ func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendC
 		"message_types", payload.MessageTypes,
 	)
 
+	// MessageTypesをJSON配列としてシリアライズし、SNSメッセージ属性に設定
+	// → SQSのサブスクリプションで `MessageAttributes.type = "xxx"` によるフィルタリングが可能
 	typesJson, err := json.Marshal(payload.MessageTypes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal message types: %w", err)
@@ -37,8 +43,8 @@ func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendC
 
 	messageAttributes := map[string]snstypes.MessageAttributeValue{
 		"type": {
-			DataType:    aws.String("String.Array"),
-			StringValue: aws.String(string(typesJson)),
+			DataType:    aws.String("String.Array"),    // NOTE: JSON配列として明示
+			StringValue: aws.String(string(typesJson)), // 例: ["slack_message", "line_message"]
 		},
 	}
 
@@ -56,6 +62,10 @@ func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendC
 	return res, nil
 }
 
+// Validate は Payload の検証を行います。
+//   - 1. TopicArn, Messageの必須チェック
+//   - 2. MessageTypesが最低1つあるか
+//   - 3. 各MessageTypeが定義された型か
 func (p *SendChargeNotificationsPayload) Validate() error {
 	if p.TopicArn == "" {
 		return fmt.Errorf("topicArn is required")
