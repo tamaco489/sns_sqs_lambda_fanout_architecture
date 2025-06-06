@@ -2,6 +2,7 @@ package sns_client
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log/slog"
 
@@ -12,9 +13,9 @@ import (
 )
 
 type SendChargeNotificationsPayload struct {
-	TopicArn    string
-	Message     string
-	MessageType MessageType
+	TopicArn     string
+	Message      string
+	MessageTypes []MessageType
 }
 
 func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendChargeNotificationsPayload) (*sns.PublishOutput, error) {
@@ -23,17 +24,21 @@ func (sw *SNSWrapper) SendChargeNotifications(ctx context.Context, payload SendC
 		return nil, fmt.Errorf("invalid payload: %w", err)
 	}
 
-	// todo: 検証終了後に削除
 	slog.InfoContext(ctx, "send charge notifications",
 		"topic_arn", payload.TopicArn,
 		"message", payload.Message,
-		"message_type", payload.MessageType.String(),
+		"message_types", payload.MessageTypes,
 	)
+
+	typesJson, err := json.Marshal(payload.MessageTypes)
+	if err != nil {
+		return nil, fmt.Errorf("failed to marshal message types: %w", err)
+	}
 
 	messageAttributes := map[string]snstypes.MessageAttributeValue{
 		"type": {
-			DataType:    aws.String("String"),
-			StringValue: aws.String(payload.MessageType.String()),
+			DataType:    aws.String("String.Array"),
+			StringValue: aws.String(string(typesJson)),
 		},
 	}
 
@@ -58,8 +63,13 @@ func (p *SendChargeNotificationsPayload) Validate() error {
 	if p.Message == "" {
 		return fmt.Errorf("message is required")
 	}
-	if !p.MessageType.IsValid() {
-		return fmt.Errorf("invalid messageType: %s", p.MessageType)
+	if len(p.MessageTypes) == 0 {
+		return fmt.Errorf("at least one messageType is required")
+	}
+	for _, mt := range p.MessageTypes {
+		if !mt.IsValid() {
+			return fmt.Errorf("invalid messageType: %s", mt)
+		}
 	}
 	return nil
 }

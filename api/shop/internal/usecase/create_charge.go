@@ -32,9 +32,9 @@ func (u *chargeUseCase) CreateCharge(ctx *gin.Context, request gen.CreateChargeR
 
 	if configuration.Get().API.Env != "dev" {
 		payload := sns_client.SendChargeNotificationsPayload{
-			TopicArn:    configuration.Get().SNS.ChargeNotificationsTopicArn,
-			Message:     "order accepted",
-			MessageType: sns_client.MessageTypeBroadcast,
+			TopicArn:     configuration.Get().SNS.ChargeNotificationsTopicArn,
+			Message:      "order accepted",
+			MessageTypes: []sns_client.MessageType{sns_client.MessageTypeSlack, sns_client.MessageTypeLine},
 		}
 
 		res, err := u.snsClient.SendChargeNotifications(ctx, payload)
