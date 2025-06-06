@@ -20,7 +20,7 @@ resource "aws_sns_topic_subscription" "slack_message" {
   # NOTE: メッセージフィルタリングを行うことで、特定のメッセージのみを送信することができる。
   # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html
   filter_policy = jsonencode({
-    type = ["slack_message"]
+    type = ["broadcast_message", "slack_message"]
   })
 
   # NOTE: SNS subscription -> SQS のメッセージ送信に失敗した場合、DLQにメッセージを送信する。
@@ -72,7 +72,7 @@ resource "aws_sns_topic_subscription" "line_message" {
   # NOTE: メッセージフィルタリングを行うことで、特定のメッセージのみを送信することができる。
   # DOC: https://docs.aws.amazon.com/sns/latest/dg/sns-message-filtering.html
   filter_policy = jsonencode({
-    type = ["line_message"]
+    type = ["broadcast_message", "line_message"]
   })
 
   # NOTE: SNS subscription -> SQS のメッセージ送信に失敗した場合、DLQにメッセージを送信する。
