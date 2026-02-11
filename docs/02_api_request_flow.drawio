@@ -1,0 +1,126 @@
+<mxfile host="app.diagrams.net" modified="2026-02-11T00:00:00.000Z" agent="draw.io" version="22.0.0" type="device">
+  <diagram id="api-request-flow" name="API Request Flow">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="700" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Title -->
+        <mxCell id="title" value="API Request Flow" style="text;html=1;fontSize=20;fontStyle=1;fillColor=none;strokeColor=none;align=left;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="40" y="20" width="300" height="40" as="geometry" />
+        </mxCell>
+
+        <!-- Client -->
+        <mxCell id="client" value="Client" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#232F3E;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=1;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.client;" vertex="1" parent="1">
+          <mxGeometry x="60" y="270" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Route 53 -->
+        <mxCell id="route53" value="Route 53&#xa;(DNS)" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#8C4FFF;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.route_53;" vertex="1" parent="1">
+          <mxGeometry x="220" y="270" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ACM -->
+        <mxCell id="acm" value="ACM&#xa;(TLS)" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#DD344C;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.certificate_manager_3;" vertex="1" parent="1">
+          <mxGeometry x="346" y="140" width="48" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- API Gateway -->
+        <mxCell id="apigw" value="API Gateway v2&#xa;(HTTP API)" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.api_gateway;" vertex="1" parent="1">
+          <mxGeometry x="380" y="270" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- VPC boundary -->
+        <mxCell id="vpc-box" value="VPC (10.1.0.0/16)" style="points=[[0,0],[0.25,0],[0.5,0],[0.75,0],[1,0],[1,0.25],[1,0.5],[1,0.75],[1,1],[0.75,1],[0.5,1],[0.25,1],[0,1],[0,0.75],[0,0.5],[0,0.25]];outlineConnect=0;gradientColor=none;html=1;whiteSpace=wrap;fontSize=13;fontStyle=1;shape=mxgraph.aws4.group;grIcon=mxgraph.aws4.group_vpc;strokeColor=#248814;fillColor=none;verticalAlign=top;align=left;spacingLeft=30;spacingTop=5;dashed=0;" vertex="1" parent="1">
+          <mxGeometry x="510" y="100" width="580" height="420" as="geometry" />
+        </mxCell>
+
+        <!-- Lambda -->
+        <mxCell id="lambda" value="Lambda&#xa;(shop-api)&#xa;Go 1.24 / Gin&#xa;Port 8080" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#ED7100;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.lambda;" vertex="1" parent="1">
+          <mxGeometry x="570" y="270" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ECR -->
+        <mxCell id="ecr" value="ECR&#xa;(Container Image)" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#ED7100;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.ecr;" vertex="1" parent="1">
+          <mxGeometry x="570" y="140" width="48" height="48" as="geometry" />
+        </mxCell>
+
+        <!-- SG: shop-api -->
+        <mxCell id="sg-shop" value="SG: stg-shop-api&#xa;Egress: 443 → SNS Endpoint SG" style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;spacingLeft=5;spacingTop=5;fontSize=10;fillColor=#F5F5F5;strokeColor=#CCCCCC;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="530" y="420" width="210" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- SNS VPC Endpoint -->
+        <mxCell id="sns-endpoint" value="SNS VPC Endpoint&#xa;(Private DNS)" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#8C4FFF;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.vpc_endpoints;" vertex="1" parent="1">
+          <mxGeometry x="770" y="270" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- SG: sns-endpoint -->
+        <mxCell id="sg-endpoint" value="SG: stg-shop-api-sns-endpoint&#xa;Ingress: 443 ← Shop API SG" style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;spacingLeft=5;spacingTop=5;fontSize=10;fillColor=#F5F5F5;strokeColor=#CCCCCC;fontColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="730" y="420" width="220" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- SNS Topic -->
+        <mxCell id="sns-topic" value="SNS Topic&#xa;(stg-fanout-notifications)" style="outlineConnect=0;fontColor=#232F3E;gradientColor=none;fillColor=#E7157B;strokeColor=none;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;pointerEvents=1;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sns;" vertex="1" parent="1">
+          <mxGeometry x="980" y="270" width="60" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 1: Client -> Route 53 -->
+        <mxCell id="flow1" value="1. DNS Resolve" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2E86C1;strokeWidth=2;fontColor=#2E86C1;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" source="client" target="route53" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 2: Route 53 -> API Gateway -->
+        <mxCell id="flow2" value="2. HTTPS Request" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2E86C1;strokeWidth=2;fontColor=#2E86C1;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" source="route53" target="apigw" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ACM -> API Gateway -->
+        <mxCell id="flow-acm" value="TLS" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#999999;strokeWidth=1;dashed=1;fontColor=#999999;fontSize=10;labelBackgroundColor=#FFFFFF;" edge="1" source="acm" target="apigw" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 3: API Gateway -> Lambda -->
+        <mxCell id="flow3" value="3. Invoke&#xa;(ANY /shop/v1/{proxy+})" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2E86C1;strokeWidth=2;fontColor=#2E86C1;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" source="apigw" target="lambda" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- ECR -> Lambda (dashed) -->
+        <mxCell id="flow-ecr" value="Image" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#999999;strokeWidth=1;dashed=1;fontColor=#999999;fontSize=10;labelBackgroundColor=#FFFFFF;" edge="1" source="ecr" target="lambda" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 4: Lambda -> SNS VPC Endpoint -->
+        <mxCell id="flow4" value="4. sns:Publish&#xa;(HTTPS 443)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2E86C1;strokeWidth=2;fontColor=#2E86C1;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" source="lambda" target="sns-endpoint" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Flow 5: SNS VPC Endpoint -> SNS Topic -->
+        <mxCell id="flow5" value="5. Publish&#xa;(PrivateLink)" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#2E86C1;strokeWidth=2;fontColor=#2E86C1;fontSize=11;labelBackgroundColor=#FFFFFF;" edge="1" source="sns-endpoint" target="sns-topic" parent="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Response flow -->
+        <mxCell id="flow-response" value="6. HTTP Response" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeColor=#27AE60;strokeWidth=2;fontColor=#27AE60;fontSize=11;dashed=1;labelBackgroundColor=#FFFFFF;" edge="1" source="lambda" target="client" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="600" y="560" />
+              <mxPoint x="90" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- API Endpoints Note -->
+        <mxCell id="note-api" value="Endpoints:&#xa;  /shop/v1/healthcheck&#xa;  /shop/v1/users&#xa;  /shop/v1/products&#xa;  /shop/v1/payments/charges&#xa;  /shop/v1/payments/cards&#xa;  /shop/v1/payments/reservations" style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;spacingLeft=5;spacingTop=5;fontSize=10;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#666666;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="200" width="260" height="130" as="geometry" />
+        </mxCell>
+
+        <!-- Message Attribute Note -->
+        <mxCell id="note-msg" value="Charge notification published with:&#xa;MessageAttributes: {&#xa;  type: &quot;slack_message&quot; | &quot;line_message&quot;&#xa;}" style="shape=note;whiteSpace=wrap;html=1;size=14;verticalAlign=top;align=left;spacingLeft=5;spacingTop=5;fontSize=10;fillColor=#FFF2CC;strokeColor=#D6B656;fontColor=#666666;fontFamily=Courier New;" vertex="1" parent="1">
+          <mxGeometry x="1160" y="370" width="280" height="80" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
